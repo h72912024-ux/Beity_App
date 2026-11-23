@@ -11,9 +11,33 @@
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Firestore%20%26%20Auth-FFCA28?style=flat-square&logo=firebase&logoColor=black)
+![Android](https://img.shields.io/badge/Android-7.0%2B%20(API%2024--36)-3DDC84?style=flat-square&logo=android&logoColor=white)
 ![RTL](https://img.shields.io/badge/UI-Arabic%20RTL-071A3A?style=flat-square)
 
 </div>
+
+---
+
+## تحميل وتثبيت التطبيق (Android APK)
+
+<div align="center">
+
+| المواصفة | التفاصيل |
+| :--- | :--- |
+| **اسم التطبيق** | بيتي \| Beity |
+| **معرف الحزمة (`Package ID`)** | `com.aistudio.beity.kqzmpx` |
+| **الإصدار (`Version`)** | `1.0` |
+| **الحد الأدنى لنظام أندرويد** | Android 7.0 (API 24) |
+| **الإصدار المستهدف** | Android 16 (API 36) |
+| **مسار الحزمة بعد البناء** | `app/build/outputs/apk/debug/app-debug.apk` |
+
+</div>
+
+### خطوات التثبيت على هاتفك الأندرويد
+
+1. **تحميل ملف الـ APK:** انتقل إلى تبويب **Releases** في أعلى يمين صفحة المستودع على GitHub وقم بتحميل أحدث ملف `.apk` (أو قم ببنائه محلياً عبر الأمر `gradle :app:assembleDebug`).
+2. **تفعيل التثبيت:** افتح الملف الذي تم تنزيله على هاتفك، وإذا طلب النظام إذن التثبيت من المتصفح أو مدير الملفات فقم بتفعيله (*Allow from this source*).
+3. **التشغيل والبدء:** اضغط **تثبيت (Install)**، ثم افتح التطبيق وسجّل الدخول مباشرة بحساب **Google**.
 
 ---
 
