@@ -1,132 +1,140 @@
-# بيتي | Beity — Real Estate Platform (Android)
+<div align="center">
 
-**كل ما تحتاجه في عالم العقارات.**  
-*Everything you need in the world of real estate.*
+<img src="app/src/main/res/drawable/img_beity_icon.jpg" alt="شعار تطبيق بيتي Beity" width="130" />
 
-**بيتي | Beity** is a native Android real estate application built with **Kotlin**, **Jetpack Compose (Material 3)**, and **Firebase (Firestore & Google Sign-In)**, designed in full **Arabic (RTL)** for the Egyptian and Arab property market.
+# بيتي | Beity
 
----
+**كل ما تحتاجه في عالم العقارات**
 
-## Visual Identity
+منصة عقارية متكاملة لنظام أندرويد لبيع وشراء وتأجير العقارات في مصر والعالم العربي، مبنية بـ **Kotlin** و**Jetpack Compose (Material 3)** ومربوطة بقاعدة بيانات **Cloud Firestore** ونظام المصادقة الآمن عبر **Google Sign-In**.
 
-- **Primary Navy:** `#071A3A`
-- **Accent Gold:** `#D6AD55`
-- **Clean Surface White:** `#FFFFFF`
-- **Typography:** `Cairo` & `Readex Pro` (bundled locally in `app/src/main/res/font/`)
-- **App Brand Icon:** Custom architectural house & modern towers adaptive launcher icon (`app/src/main/res/drawable/img_beity_icon.jpg` & `ic_launcher_foreground.xml`)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.4-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Firestore%20%26%20Auth-FFCA28?style=flat-square&logo=firebase&logoColor=black)
+![RTL](https://img.shields.io/badge/UI-Arabic%20RTL-071A3A?style=flat-square)
 
-<p align="center">
-  <img src="app/src/main/res/drawable/img_beity_icon.jpg" alt="Beity App Icon" width="140" />
-</p>
+</div>
 
 ---
 
-## Screenshots & Demo Video
+## الهوية البصرية وأصول التطبيق
 
-> **Note:** Capture live screenshots / screen recording from the **AI Studio Streaming Android Emulator** (or Android Studio's Device Manager), save them under `docs/media/`, and commit them to your GitHub repository.
+يعتمد تطبيق **بيتي | Beity** هوية بصرية موحدة في جميع الشاشات تجمع بين الفخامة والوضوح:
+- **الألوان الأساسية:** الكحلي الفاخر (`#071A3A`)، الذهبي (`#D6AD55`)، والأبيض (`#FFFFFF`) مع دعم كامل للوضعين النهاري والليلي.
+- **الخطوط ودعم العربية:** استخدام خطَّي **Cairo** و**Readex Pro** المدمجين محلياً مع تفعيل اتجاه الكتابة من اليمين إلى اليسار (**RTL**) على مستوى التطبيق بالكامل.
 
-### Demo Video
-<!-- Drag & drop your .mp4 directly into the GitHub README editor, or commit docs/media/demo.mp4 and link it below -->
-- **App Walkthrough Video:** `docs/media/beity_demo.mp4` *(add your recorded walkthrough here)*
+<div align="center">
 
-### App Screenshots
+| الأيقونة والهوية الرسمية | بانر الواجهة الرئيسية |
+| :---: | :---: |
+| <img src="app/src/main/res/drawable/img_beity_icon.jpg" alt="أيقونة بيتي" width="260" /> | <img src="app/src/main/res/drawable/img_hero_luxury.jpg" alt="الواجهة الترحيبية" width="420" /> |
+| **أيقونة التطبيق التكيفية (`Adaptive Icon`):** تجمع بين شكل المنزل والأبراج السكنية بخطوط ذهبية على خلفية كحلية وتُستخدم في شاشة البداية والأيقونة الرئيسية. | **البانر الرئيسي (`Hero Banner`):** واجهة الترحيب في الصفحة الرئيسية مع عبارة *"اعثر على بيت أحلامك بسهولة"* وشريط البحث الفوري. |
 
-| Splash & Sign-In | Home & Quick Search | Advanced Filters & Map |
+| الفيلات والكمبوندات | الشقق السكنية والبنتهاوس | الشاليهات والوحدات الساحلية |
 | :---: | :---: | :---: |
-| ![Splash](docs/media/01_splash_auth.png) | ![Home](docs/media/02_home.png) | ![Explore](docs/media/03_explore_map.png) |
+| <img src="app/src/main/res/drawable/img_prop_villa.jpg" alt="فيلات" width="260" /> | <img src="app/src/main/res/drawable/img_prop_apartment.jpg" alt="شقق سكنية" width="260" /> | <img src="app/src/main/res/drawable/img_prop_chalet.jpg" alt="شاليهات" width="260" /> |
+| **قسم الفيلات الفاخرة:** عرض الفيلات المستقلة والتوين هاوس بحدائق خاصة ومسابح في التجمع والشيخ زايد. | **قسم الشقق والبنتهاوس:** وحدات سكنية بتشطيبات سوبر لوكس وإطلالات نيلية أو مدينة متكاملة الخدمات. | **قسم الشاليهات:** وحدات ساحلية مطلة على البحر واللاجون في الساحل الشمالي والعين السخنة. |
 
-| Property Details | Add / Edit Listing | Favorites & Compare |
-| :---: | :---: | :---: |
-| ![Details](docs/media/04_details.png) | ![Add Property](docs/media/05_add_property.png) | ![Compare](docs/media/06_favorites_compare.png) |
-
-| In-App Chat & Alerts | Profile & My Listings | Admin Dashboard |
-| :---: | :---: | :---: |
-| ![Messages](docs/media/07_messages.png) | ![Profile](docs/media/08_profile.png) | ![Admin](docs/media/09_admin.png) |
+</div>
 
 ---
 
-## Core Features
+## المميزات الرئيسية للتطبيق
 
-### 1. Home & Navigation
-- Animated luxury navy-and-gold **Splash Screen**.
-- Custom top header with **BeityLogo**, quick navigation links (Home, Explore, Buy, Rent, Map, About, Contact), notifications badge, and quick Add Property CTA.
-- Quick search card (Sale/Rent, Governorate, City, District, Property Type, Max Price).
-- 7 real estate categories (Apartments, Villas, Lands, Commercial Shops, Administrative Offices, Chalets, Investment Properties).
-- Live Firestore sections: **Featured**, **Latest**, **Best Value Opportunities**, **Suggested**, and **Most Viewed**.
+### 1. شاشة البداية والمصادقة الآمنة (`Splash` & `Auth`)
+- شاشة بداية متحركة تظهر فيها أيقونة **بيتي** بلمسات ذهبية على خلفية كحلية مع انتقال سلس.
+- تسجيل الدخول عبر **Google Sign-In (Credential Manager)** مع مزامنة تلقائية لحالة الجلسة وإنشاء ملف المستخدم في Firestore.
 
-### 2. Advanced Search & Interactive Map
-- **16 real-time filter parameters**: query text, governorate, city, district, property type, listing type (sale/rent), min/max price, min/max area (m²), min bedrooms, min bathrooms, floor range, finishing type, furnished status, elevator, garage, balcony, and publication recency.
-- **5 sorting modes**: Newest, Lowest Price, Highest Price, Most Viewed, Largest Area.
-- **Search History** synced per user in Firestore.
-- **Interactive Canvas Map** plotting Egyptian governorates and property pins with one-tap preview & filter.
+### 2. الصفحة الرئيسية والتنقل السريع (`Home`)
+- هيدر احترافي يضم شعار التطبيق، روابط التنقل السريع (الرئيسية، استكشف، بيع، إيجار، الخريطة، من نحن، تواصل معنا)، شارة الإشعارات، وزر إضافة عقار.
+- شريط بحث سريع مباشر (العملية، المحافظة، المدينة، المنطقة، نوع العقار، السعر الأقصى).
+- 7 أقسام عقارية: **شقق سكنية، فيلات، أراضي، محلات تجارية، مكاتب إدارية، شاليهات، وعقارات استثمارية**.
+- قوائم ديناميكية متصلة بـ Firestore: **العقارات المميزة، أحدث العقارات، أفضل الفرص، المقترحة لك، والأكثر مشاهدة**.
 
-### 3. Property Details & Engagement
-- Swipeable photo gallery with fullscreen pinch-to-zoom lightbox and optional video link.
-- Full specifications grid, features & amenities chips, and external map coordinate launcher (`geo:` URI).
-- Direct **Call**, **WhatsApp**, **In-App Real-Time Chat**, **Share**, **Favorite**, **Compare (up to 3 properties side-by-side)**, **Reviews**, and **Report Listing**.
+### 3. البحث المتقدم والخريطة التفاعلية (`Explore` & `Map`)
+- **16 معيار فلترة تفاعلي:** البحث النصي، المحافظة، المدينة، الحي، نوع العقار، بيع/إيجار، أقل وأعلى سعر، أقل وأقصى مساحة، عدد الغرف، الحمامات، نطاق الطوابق، نوع التشطيب، مفروش/غير مفروش، مصعد، جراج، بلكونة، وتاريخ نشر الإعلان.
+- **5 أوضاع ترتيب:** الأحدث، الأقل سعراً، الأعلى سعراً، الأكثر مشاهدة، والمساحة الأكبر.
+- **سجل البحث:** حفظ واسترجاع عمليات البحث السابقة لكل مستخدم.
+- **الخريطة العقارية التفاعلية:** عرض دبابيس العقارات على خريطة المحافظات مع معاينة فورية للبطاقة والتصفية حسب المحافظة.
 
-### 4. Accounts, Listings & Admin Moderation
-- **Google Sign-In** via Jetpack `CredentialManager` (`GetSignInWithGoogleOption`).
-- **Add/Edit Property** with zero-permission **Android Photo Picker** (`PickMultipleVisualMedia`) + JPEG compression, architectural presets, and automatic coordinate lookup.
-- **My Properties Manager**: track moderation status (`pending`, `approved`, `rejected`, `paused`), edit, pause/republish, or delete listings.
-- **Admin Dashboard** (restricted to verified admin account): KPI analytics, category distribution Canvas chart, listing approval/rejection/featuring, user account status & role management, report resolution, category/location management, and a one-tap **Demo Data Seeder** for testing.
+### 4. صفحة تفاصيل العقار (`Property Details`)
+- معرض صور قابل للتمرير مع وضع التكبير الكامل (`Zoom Lightbox`) وزر تشغيل رابط فيديو العقار.
+- بطاقة مواصفات تفصيلية (المساحة، الغرف، الحمامات، الطابق، التشطيب، الفرش، المرافق) وقائمة المميزات والخدمات المحيطة.
+- عرض الإحداثيات الجغرافية مع زر فتح الموقع في تطبيق الخرائط.
+- أزرار تفاعل مباشرة: **اتصال هاتفي**، **واتساب**، **مراسلة فورية داخل التطبيق**، **مشاركة**، **إضافة للمفضلة**، **إضافة للمقارنة**، **تقييم العقار**، و**الإبلاغ عن الإعلان**.
 
-### 5. Information, Support & Dark/Light Mode
-- Persistent Dark/Light theme toggle stored via Jetpack **DataStore Preferences**.
-- Dedicated pages for **About Us**, **Contact Us** (submits support tickets to Firestore), **FAQ**, **Privacy Policy**, **Terms & Conditions**, **Ad Publishing Policy**, and **Report an Issue**.
+### 5. إضافة وتعديل العقارات (`Add / Edit Property`)
+- نموذج متكامل يدعم رفع عدة صور من المعرض عبر **Android Photo Picker** (بدون الحاجة لأذونات تخزين واسعة) مع ضغط تلقائي للصور أو اختيار قوالب معمارية جاهزة.
+- ربط تلقائي للإحداثيات حسب المحافظة والمدينة المختارة.
+- إرسال الإعلانات الجديدة بحالة **"قيد المراجعة"** لاعتمادها من الإدارة قبل النشر العام.
+
+### 6. المفضلة والمقارنة الجانبية (`Favorites` & `Compare`)
+- حفظ العقارات المفضلة في قائمة متزامنة مع الحساب في Firestore.
+- مقارنة **حتى 3 عقارات جنباً إلى جنب** في جدول تفصيلي يشمل السعر، سعر المتر، المساحة، الغرف، الطابق، التشطيب، والمرافق.
+
+### 7. المحادثات والإشعارات الفورية (`Messages` & `Notifications`)
+- محادثات ثنائية فورية بين الباحث والمعلن مرتبطة بكل عقار ومحصورة أمنياً بالمشاركين فقط.
+- إشعارات فورية للرسائل الجديدة وتحديثات حالة مراجعة الإعلانات مع شارة للرسائل غير المقروءة.
+
+### 8. الملف الشخصي وإدارة الإعلانات (`Profile`)
+- تعديل البيانات الشخصية (الاسم، الهاتف، المدينة، نوع الحساب: باحث أو مالك/معلن) وتغيير الصورة الشخصية.
+- إدارة إعلانات المستخدم: متابعة الحالة (مقبول، قيد المراجعة، مرفوض مع السبب، متوقف)، التعديل، الإيقاف المؤقت/إعادة النشر، والحذف.
+- التبديل الفوري بين الوضع النهاري والوضع الليلي وحفظ التفضيل محلياً عبر **DataStore**.
+
+### 9. لوحة تحكم الإدارة (`Admin Dashboard`)
+- متاحة لحساب المسؤول المعتمد وتضم:
+  - بطاقات إحصائيات شاملة (المستخدمون، العقارات، البيع/الإيجار، المراجعة، المشاهدات، البلاغات) مع رسم بياني لتوزيع العقارات حسب النوع.
+  - مراجعة الإعلانات (اعتماد، رفض مع ذكر السبب، تمييز العقار كمميز، حذف).
+  - إدارة المستخدمين (تغيير نوع الحساب أو تعطيل/تفعيل الحساب).
+  - معالجة البلاغات وتذاكر الدعم، إدارة الأقسام والمحافظات، وأداة إدراج بيانات تجريبية (`Demo`) عند الحاجة للاختبار.
+
+### 10. صفحات المعلومات والدعم (`Info & Support`)
+- صفحات مخصصة لـ: **من نحن**، **اتصل بنا** (إرسال تذاكر دعم مباشرة إلى Firestore)، **الأسئلة الشائعة**، **سياسة الخصوصية**، **الشروط والأحكام**، **سياسة نشر الإعلانات**، و**الإبلاغ عن مشكلة**.
 
 ---
 
-## Tech Stack
+## التقنيات المستخدمة
 
-- **Language:** Kotlin
-- **UI:** Jetpack Compose (`compose-bom:2024.09.00`), Material Design 3, Navigation Compose, Coil
-- **Architecture:** MVVM + Repository pattern (`ViewModel`, `StateFlow`, Kotlin Coroutines & Flow)
-- **Backend & Auth:** Firebase Authentication + Google Identity (`androidx.credentials`, `googleid`), Cloud Firestore (named database)
-- **Local Preferences:** Jetpack DataStore Preferences
-- **Security & Testing:** Zero-trust `firestore.rules`, `@firebase/rules-unit-testing` emulator tests (`firestore.test.js`), JUnit4, and Robolectric
+| المجال | التقنية / المكتبة |
+| :--- | :--- |
+| **اللغة والواجهة** | Kotlin 2.4، Jetpack Compose (Material Design 3)، Navigation Compose |
+| **المعمارية وإدارة الحالة** | MVVM، `ViewModel`، `StateFlow`، Kotlin Coroutines & Flow |
+| **قاعدة البيانات والمصادقة** | Cloud Firestore (قاعدة مسماة)، Firebase Auth، Jetpack Credential Manager |
+| **تخزين التفضيلات والصور** | Jetpack DataStore Preferences، Coil، Android Photo Picker |
+| **الاختبارات والأمان** | `firestore.rules` (Zero-Trust)، `@firebase/rules-unit-testing`، JUnit4، Robolectric |
 
 ---
 
-## Project Structure
+## هيكلة المشروع
 
 ```text
 ├── app/src/main/java/com/example/
 │   ├── MainActivity.kt
 │   ├── data/
-│   │   ├── model/          # BeityModels.kt, EgyptCatalog.kt
+│   │   ├── model/          # نماذج البيانات وكتالوج المحافظات والأقسام
 │   │   └── repository/     # AuthManager, BeityRepository, AdminRepository, PreferencesRepository
 │   └── ui/
-│       ├── BeityApp.kt     # Root navigation shell (BottomBar / NavigationRail)
-│       ├── components/     # BeityLogo, PropertyCard, ImageHelper, InteractiveMapCanvas
-│       ├── screens/        # Splash, Auth, Home, Explore, Detail, AddEdit, FavoritesCompare,
-│       │                   # Messages, Profile, AdminDashboard, InfoPages
-│       ├── theme/          # Color.kt, Type.kt, Theme.kt
+│       ├── BeityApp.kt     # التوجيه الرئيسي ودعم الشاشات الكبيرة (NavigationBar / NavigationRail)
+│       ├── components/     # الشعار، بطاقة العقار، عارض الصور، الخريطة التفاعلية
+│       ├── screens/        # شاشات التطبيق (11 شاشة متكاملة)
+│       ├── theme/          # الألوان، الخطوط العربية، والسمات النهارية والليلية
 │       └── viewmodel/      # MainViewModel, AdminViewModel
-├── firestore.rules         # Zero-trust Firestore security rules
-├── firestore.test.js       # Local Firestore emulator security rule tests
-└── firebase-blueprint.json # Firestore schema blueprint
+├── firestore.rules         # قواعد أمان Firestore وعزل البيانات
+├── firestore.test.js       # اختبارات قواعد الأمان على المحاكي المحلي
+└── firebase-blueprint.json # مخطط مجموعات وحقول Firestore
 ```
 
 ---
 
-## Build & Test Commands
+## أوامر البناء والاختبار
 
 ```bash
-# Compile & assemble debug APK
+# بناء حزمة التطبيق (Debug APK)
 gradle :app:assembleDebug
 
-# Run JVM unit & Robolectric tests
+# تشغيل اختبارات الوحدة وRobolectric
 gradle :app:testDebugUnitTest
 
-# Run Firestore security rules tests against local emulator
+# تشغيل اختبارات قواعد أمان Firestore عبر المحاكي المحلي
 FIRESTORE_EMULATOR_HOST="127.0.0.1:8085" node --test firestore.test.js
 ```
-
----
-
-## How to Push This Project to GitHub from Google AI Studio
-
-1. Open the **Settings** menu in Google AI Studio.
-2. Select **Push to GitHub** and authorize your GitHub repository.
-3. Once pushed, add your recorded demo video (`docs/media/beity_demo.mp4`) or emulator screenshots (`docs/media/*.png`) directly in GitHub or locally via `git push`.
