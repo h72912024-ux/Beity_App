@@ -1,0 +1,6 @@
+{
+  "name": "بيتي | Beity",
+  "description": "منصة عقارية متكاملة لبيع وشراء وتأجير العقارات في مصر والعالم العربي",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

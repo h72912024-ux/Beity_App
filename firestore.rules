@@ -1,0 +1,482 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- GLOBAL HELPERS ---
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() &&
+             'email_verified' in request.auth.token &&
+             request.auth.token.email_verified == true &&
+             'email' in request.auth.token &&
+             request.auth.token.email == 'mstfymhmwdydabwkhdr@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() ||
+             (isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    // --- VALIDATION HELPERS ---
+    function isValidUser(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80 &&
+             data.accountType in ['seeker', 'owner'] &&
+             data.status in ['active', 'suspended'] &&
+             (!('email' in data) || (data.email is string && data.email.size() <= 120)) &&
+             (!('phone' in data) || (data.phone is string && data.phone.size() <= 30)) &&
+             (!('city' in data) || (data.city is string && data.city.size() <= 60)) &&
+             (!('avatarUrl' in data) || (data.avatarUrl is string && data.avatarUrl.size() <= 90000)) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidPublicProfile(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80 &&
+             data.accountType in ['seeker', 'owner'] &&
+             data.verified is bool &&
+             (!('city' in data) || (data.city is string && data.city.size() <= 60)) &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidProperty(data) {
+      return data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128 &&
+             data.ownerName is string && data.ownerName.size() >= 1 && data.ownerName.size() <= 80 &&
+             data.contactPhone is string && data.contactPhone.size() >= 6 && data.contactPhone.size() <= 25 &&
+             data.title is string && data.title.size() >= 3 && data.title.size() <= 120 &&
+             data.description is string && data.description.size() >= 10 && data.description.size() <= 2500 &&
+             data.propertyType in ['apartment', 'villa', 'land', 'shop', 'office', 'chalet', 'investment'] &&
+             data.listingType in ['sale', 'rent'] &&
+             (data.price is int || data.price is float) && data.price > 0 && data.price <= 10000000000 &&
+             (data.areaSqm is int || data.areaSqm is float) && data.areaSqm > 0 && data.areaSqm <= 10000000 &&
+             data.governorate is string && data.governorate.size() >= 1 && data.governorate.size() <= 60 &&
+             data.city is string && data.city.size() >= 1 && data.city.size() <= 60 &&
+             data.district is string && data.district.size() >= 1 && data.district.size() <= 80 &&
+             data.address is string && data.address.size() >= 1 && data.address.size() <= 200 &&
+             data.bedrooms is int && data.bedrooms >= 0 && data.bedrooms <= 50 &&
+             data.bathrooms is int && data.bathrooms >= 0 && data.bathrooms <= 30 &&
+             data.floor is int && data.floor >= -2 && data.floor <= 150 &&
+             data.finishingType in ['super_lux', 'lux', 'semi_finished', 'unfinished', 'furnished'] &&
+             data.furnished is bool &&
+             data.hasElevator is bool &&
+             data.hasGarage is bool &&
+             data.hasBalcony is bool &&
+             data.features is list && data.features.size() <= 15 &&
+             (data.features.size() == 0 || (data.features[0] is string && data.features[0].size() <= 60)) &&
+             data.amenities is list && data.amenities.size() <= 15 &&
+             (data.amenities.size() == 0 || (data.amenities[0] is string && data.amenities[0].size() <= 60)) &&
+             data.imageUrls is list && data.imageUrls.size() <= 10 &&
+             (data.imageUrls.size() == 0 || (data.imageUrls[0] is string && data.imageUrls[0].size() <= 90000)) &&
+             (!('videoUrl' in data) || (data.videoUrl is string && data.videoUrl.size() <= 300)) &&
+             (data.latitude is int || data.latitude is float) && data.latitude >= -90 && data.latitude <= 90 &&
+             (data.longitude is int || data.longitude is float) && data.longitude >= -180 && data.longitude <= 180 &&
+             data.status in ['pending', 'approved', 'rejected', 'paused'] &&
+             data.featured is bool &&
+             data.viewsCount is int && data.viewsCount >= 0 &&
+             (!('rejectionReason' in data) || (data.rejectionReason is string && data.rejectionReason.size() <= 300)) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidReview(data) {
+      return data.propertyId is string && data.propertyId.size() >= 1 && data.propertyId.size() <= 128 &&
+             data.authorId is string && data.authorId.size() >= 1 && data.authorId.size() <= 128 &&
+             data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 80 &&
+             data.rating is int && data.rating >= 1 && data.rating <= 5 &&
+             data.comment is string && data.comment.size() >= 2 && data.comment.size() <= 600 &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidFavorite(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.propertyId is string && data.propertyId.size() >= 1 && data.propertyId.size() <= 128 &&
+             (!('title' in data) || (data.title is string && data.title.size() <= 120)) &&
+             (!('price' in data) || ((data.price is int || data.price is float) && data.price >= 0)) &&
+             (!('city' in data) || (data.city is string && data.city.size() <= 60)) &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidSearchHistory(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.querySummary is string && data.querySummary.size() >= 1 && data.querySummary.size() <= 200 &&
+             (!('governorate' in data) || (data.governorate is string && data.governorate.size() <= 60)) &&
+             (!('propertyType' in data) || (data.propertyType is string && data.propertyType.size() <= 40)) &&
+             (!('listingType' in data) || (data.listingType is string && data.listingType.size() <= 20)) &&
+             (!('maxPrice' in data) || ((data.maxPrice is int || data.maxPrice is float) && data.maxPrice >= 0)) &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidNotification(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.senderId is string && data.senderId.size() >= 1 && data.senderId.size() <= 128 &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 120 &&
+             data.body is string && data.body.size() >= 1 && data.body.size() <= 400 &&
+             data.type in ['message', 'listing_status', 'new_offer', 'system'] &&
+             (!('targetId' in data) || (data.targetId is string && data.targetId.size() <= 128)) &&
+             data.read is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidConversation(data) {
+      return data.participantIds is list && data.participantIds.size() == 2 &&
+             data.participantIds[0] is string && data.participantIds[1] is string &&
+             data.propertyId is string && data.propertyId.size() >= 1 && data.propertyId.size() <= 128 &&
+             data.propertyTitle is string && data.propertyTitle.size() >= 1 && data.propertyTitle.size() <= 120 &&
+             data.participantNames is map && data.participantNames.size() <= 4 &&
+             data.lastMessage is string && data.lastMessage.size() >= 1 && data.lastMessage.size() <= 1000 &&
+             data.lastSenderId is string && data.lastSenderId.size() >= 1 && data.lastSenderId.size() <= 128 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidMessage(data) {
+      return data.conversationId is string && data.conversationId.size() >= 1 && data.conversationId.size() <= 128 &&
+             data.senderId is string && data.senderId.size() >= 1 && data.senderId.size() <= 128 &&
+             data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 80 &&
+             data.participantIds is list && data.participantIds.size() == 2 &&
+             data.text is string && data.text.size() >= 1 && data.text.size() <= 1000 &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    function isValidReport(data) {
+      return data.reporterId is string && data.reporterId.size() >= 1 && data.reporterId.size() <= 128 &&
+             data.reporterName is string && data.reporterName.size() >= 1 && data.reporterName.size() <= 80 &&
+             (!('propertyId' in data) || (data.propertyId is string && data.propertyId.size() <= 128)) &&
+             (!('propertyTitle' in data) || (data.propertyTitle is string && data.propertyTitle.size() <= 120)) &&
+             data.reportType in ['property_report', 'support_ticket'] &&
+             data.reason is string && data.reason.size() >= 2 && data.reason.size() <= 120 &&
+             data.details is string && data.details.size() >= 5 && data.details.size() <= 1500 &&
+             data.status in ['open', 'resolved'] &&
+             (!('adminNotes' in data) || (data.adminNotes is string && data.adminNotes.size() <= 500)) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidCategory(data) {
+      return data.key is string && data.key.size() >= 1 && data.key.size() <= 40 &&
+             data.nameAr is string && data.nameAr.size() >= 1 && data.nameAr.size() <= 60 &&
+             data.enabled is bool &&
+             data.sortOrder is int && data.sortOrder >= 0 && data.sortOrder <= 100;
+    }
+
+    function isValidLocation(data) {
+      return data.nameAr is string && data.nameAr.size() >= 1 && data.nameAr.size() <= 60 &&
+             data.cities is list && data.cities.size() <= 40 &&
+             (data.cities.size() == 0 || (data.cities[0] is string && data.cities[0].size() <= 60)) &&
+             data.enabled is bool;
+    }
+
+    // --- COLLECTION RULES ---
+
+    match /admins/{adminId} {
+      allow get: if (isOwner(adminId) || isAdmin()) && isValidId(adminId);
+      allow list: if isBootstrappedAdmin();
+      allow create, update, delete: if isAdmin() && isValidId(adminId);
+    }
+
+    match /users/{userId} {
+      allow get: if (isOwner(userId) || isAdmin()) && isValidId(userId);
+      allow list: if isBootstrappedAdmin();
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUser(incoming()) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().status == 'active' &&
+                       incoming().keys().hasAll(['userId', 'displayName', 'accountType', 'status', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'displayName', 'email', 'phone', 'city', 'accountType', 'status', 'avatarUrl', 'createdAt', 'updatedAt']);
+
+      allow update: if isSignedIn() &&
+                       isValidId(userId) &&
+                       isValidUser(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         (isOwner(userId) &&
+                          incoming().status == existing().status &&
+                          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email', 'phone', 'city', 'accountType', 'avatarUrl', 'updatedAt'])) ||
+                         (isAdmin() &&
+                          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'phone', 'city', 'accountType', 'status', 'updatedAt']))
+                       );
+
+      allow delete: if (isOwner(userId) || isAdmin()) && isValidId(userId);
+
+      match /favorites/{propertyId} {
+        allow get, delete: if isOwner(userId) && isValidId(userId) && isValidId(propertyId);
+        allow list: if isOwner(userId);
+        allow create, update: if isOwner(userId) &&
+                                 isValidId(userId) &&
+                                 isValidId(propertyId) &&
+                                 isValidFavorite(incoming()) &&
+                                 incoming().userId == request.auth.uid &&
+                                 incoming().propertyId == propertyId &&
+                                 incoming().keys().hasAll(['userId', 'propertyId', 'createdAt']) &&
+                                 incoming().keys().hasOnly(['userId', 'propertyId', 'title', 'price', 'city', 'createdAt']);
+      }
+
+      match /search_history/{historyId} {
+        allow get, delete: if isOwner(userId) && isValidId(userId) && isValidId(historyId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+                         isValidId(userId) &&
+                         isValidId(historyId) &&
+                         isValidSearchHistory(incoming()) &&
+                         incoming().userId == request.auth.uid &&
+                         incoming().keys().hasAll(['userId', 'querySummary', 'createdAt']) &&
+                         incoming().keys().hasOnly(['userId', 'querySummary', 'governorate', 'propertyType', 'listingType', 'maxPrice', 'createdAt']);
+      }
+
+      match /notifications/{notificationId} {
+        allow get, delete: if (isOwner(userId) || isAdmin()) && isValidId(userId) && isValidId(notificationId);
+        allow list: if isOwner(userId) || isBootstrappedAdmin();
+        allow create: if isSignedIn() &&
+                         isValidId(userId) &&
+                         isValidId(notificationId) &&
+                         isValidNotification(incoming()) &&
+                         incoming().userId == userId &&
+                         incoming().senderId == request.auth.uid &&
+                         incoming().read == false &&
+                         incoming().keys().hasAll(['userId', 'senderId', 'title', 'body', 'type', 'read', 'createdAt']) &&
+                         incoming().keys().hasOnly(['userId', 'senderId', 'title', 'body', 'type', 'targetId', 'read', 'createdAt']);
+        allow update: if isOwner(userId) &&
+                         isValidId(userId) &&
+                         isValidId(notificationId) &&
+                         isValidNotification(incoming()) &&
+                         incoming().userId == existing().userId &&
+                         incoming().senderId == existing().senderId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['read']);
+      }
+    }
+
+    match /public_profiles/{userId} {
+      allow get: if isSignedIn() && isValidId(userId);
+      allow list: if isSignedIn() && resource.data.userId is string;
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidPublicProfile(incoming()) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().verified == false &&
+                       incoming().keys().hasAll(['userId', 'displayName', 'accountType', 'verified', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'displayName', 'accountType', 'city', 'verified', 'updatedAt']);
+
+      allow update: if isSignedIn() &&
+                       isValidId(userId) &&
+                       isValidPublicProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       (
+                         (isOwner(userId) &&
+                          incoming().verified == existing().verified &&
+                          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'accountType', 'city', 'updatedAt'])) ||
+                         (isAdmin() &&
+                          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'accountType', 'city', 'verified', 'updatedAt']))
+                       );
+
+      allow delete: if (isOwner(userId) || isAdmin()) && isValidId(userId);
+    }
+
+    match /properties/{propertyId} {
+      allow get: if isSignedIn() &&
+                    isValidId(propertyId) &&
+                    (existing().status == 'approved' || existing().ownerId == request.auth.uid || isAdmin());
+
+      allow list: if isSignedIn() &&
+                     (resource.data.status == 'approved' || resource.data.ownerId == request.auth.uid || isBootstrappedAdmin());
+
+      allow create: if isSignedIn() &&
+                       isValidId(propertyId) &&
+                       isValidProperty(incoming()) &&
+                       incoming().ownerId == request.auth.uid &&
+                       incoming().viewsCount == 0 &&
+                       ((incoming().status == 'pending' && incoming().featured == false) || isAdmin()) &&
+                       incoming().keys().hasAll([
+                         'ownerId', 'ownerName', 'contactPhone', 'title', 'description',
+                         'propertyType', 'listingType', 'price', 'areaSqm', 'governorate',
+                         'city', 'district', 'address', 'bedrooms', 'bathrooms', 'floor',
+                         'finishingType', 'furnished', 'hasElevator', 'hasGarage', 'hasBalcony',
+                         'features', 'amenities', 'imageUrls', 'latitude', 'longitude',
+                         'status', 'featured', 'viewsCount', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'ownerId', 'ownerName', 'contactPhone', 'title', 'description',
+                         'propertyType', 'listingType', 'price', 'areaSqm', 'governorate',
+                         'city', 'district', 'address', 'bedrooms', 'bathrooms', 'floor',
+                         'finishingType', 'furnished', 'hasElevator', 'hasGarage', 'hasBalcony',
+                         'features', 'amenities', 'imageUrls', 'videoUrl', 'latitude', 'longitude',
+                         'status', 'featured', 'viewsCount', 'rejectionReason', 'createdAt', 'updatedAt'
+                       ]);
+
+      allow update: if isSignedIn() &&
+                       isValidId(propertyId) &&
+                       isValidProperty(incoming()) &&
+                       incoming().ownerId == existing().ownerId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         isAdmin() ||
+                         (existing().ownerId == request.auth.uid &&
+                          incoming().featured == existing().featured &&
+                          incoming().viewsCount == existing().viewsCount &&
+                          (
+                            incoming().status == 'pending' ||
+                            (incoming().status == 'paused' && (existing().status == 'approved' || existing().status == 'paused')) ||
+                            (incoming().status == 'approved' && existing().status == 'paused')
+                          ) &&
+                          incoming().diff(existing()).affectedKeys().hasOnly([
+                            'ownerName', 'contactPhone', 'title', 'description',
+                            'propertyType', 'listingType', 'price', 'areaSqm', 'governorate',
+                            'city', 'district', 'address', 'bedrooms', 'bathrooms', 'floor',
+                            'finishingType', 'furnished', 'hasElevator', 'hasGarage', 'hasBalcony',
+                            'features', 'amenities', 'imageUrls', 'videoUrl', 'latitude', 'longitude',
+                            'status', 'updatedAt'
+                          ])) ||
+                         (existing().ownerId == request.auth.uid &&
+                          (existing().status == 'approved' || existing().status == 'paused') &&
+                          (incoming().status == 'approved' || incoming().status == 'paused') &&
+                          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])) ||
+                         (existing().status == 'approved' &&
+                          incoming().viewsCount == existing().viewsCount + 1 &&
+                          incoming().diff(existing()).affectedKeys().hasOnly(['viewsCount']))
+                       );
+
+      allow delete: if isSignedIn() &&
+                       isValidId(propertyId) &&
+                       (existing().ownerId == request.auth.uid || isAdmin());
+
+      match /reviews/{reviewId} {
+        allow get: if isSignedIn() && isValidId(propertyId) && isValidId(reviewId);
+        allow list: if isSignedIn() && resource.data.propertyId == propertyId;
+        allow create: if isSignedIn() &&
+                         isValidId(propertyId) &&
+                         isValidId(reviewId) &&
+                         exists(/databases/$(database)/documents/properties/$(propertyId)) &&
+                         isValidReview(incoming()) &&
+                         incoming().authorId == request.auth.uid &&
+                         incoming().propertyId == propertyId &&
+                         incoming().keys().hasAll(['propertyId', 'authorId', 'authorName', 'rating', 'comment', 'createdAt']) &&
+                         incoming().keys().hasOnly(['propertyId', 'authorId', 'authorName', 'rating', 'comment', 'createdAt']);
+        allow delete: if isSignedIn() && isValidId(propertyId) && isValidId(reviewId) && (existing().authorId == request.auth.uid || isAdmin());
+      }
+    }
+
+    match /conversations/{conversationId} {
+      allow get: if isSignedIn() &&
+                    isValidId(conversationId) &&
+                    (request.auth.uid in existing().participantIds || isAdmin());
+
+      allow list: if isSignedIn() &&
+                     (request.auth.uid in resource.data.participantIds || isBootstrappedAdmin());
+
+      allow create: if isSignedIn() &&
+                       isValidId(conversationId) &&
+                       isValidConversation(incoming()) &&
+                       request.auth.uid in incoming().participantIds &&
+                       incoming().lastSenderId == request.auth.uid &&
+                       incoming().keys().hasAll([
+                         'participantIds', 'propertyId', 'propertyTitle',
+                         'participantNames', 'lastMessage', 'lastSenderId', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'participantIds', 'propertyId', 'propertyTitle',
+                         'participantNames', 'lastMessage', 'lastSenderId', 'createdAt', 'updatedAt'
+                       ]);
+
+      allow update: if isSignedIn() &&
+                       isValidId(conversationId) &&
+                       isValidConversation(incoming()) &&
+                       request.auth.uid in existing().participantIds &&
+                       incoming().participantIds == existing().participantIds &&
+                       incoming().propertyId == existing().propertyId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().lastSenderId == request.auth.uid &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['lastMessage', 'lastSenderId', 'participantNames', 'updatedAt']);
+
+      match /messages/{messageId} {
+        allow get: if isSignedIn() &&
+                      isValidId(conversationId) &&
+                      isValidId(messageId) &&
+                      (request.auth.uid in existing().participantIds || isAdmin());
+
+        allow list: if isSignedIn() &&
+                       (request.auth.uid in resource.data.participantIds || isBootstrappedAdmin());
+
+        allow create: if isSignedIn() &&
+                         isValidId(conversationId) &&
+                         isValidId(messageId) &&
+                         isValidMessage(incoming()) &&
+                         exists(/databases/$(database)/documents/conversations/$(conversationId)) &&
+                         incoming().conversationId == conversationId &&
+                         incoming().senderId == request.auth.uid &&
+                         request.auth.uid in incoming().participantIds &&
+                         incoming().participantIds == get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds &&
+                         incoming().keys().hasAll(['conversationId', 'senderId', 'senderName', 'participantIds', 'text', 'createdAt']) &&
+                         incoming().keys().hasOnly(['conversationId', 'senderId', 'senderName', 'participantIds', 'text', 'createdAt']);
+      }
+    }
+
+    match /reports/{reportId} {
+      allow get: if isSignedIn() &&
+                    isValidId(reportId) &&
+                    (existing().reporterId == request.auth.uid || isAdmin());
+
+      allow list: if isSignedIn() &&
+                     (resource.data.reporterId == request.auth.uid || isBootstrappedAdmin());
+
+      allow create: if isSignedIn() &&
+                       isValidId(reportId) &&
+                       isValidReport(incoming()) &&
+                       incoming().reporterId == request.auth.uid &&
+                       incoming().status == 'open' &&
+                       incoming().keys().hasAll(['reporterId', 'reporterName', 'reportType', 'reason', 'details', 'status', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['reporterId', 'reporterName', 'propertyId', 'propertyTitle', 'reportType', 'reason', 'details', 'status', 'adminNotes', 'createdAt', 'updatedAt']);
+
+      allow update: if isAdmin() &&
+                       isValidId(reportId) &&
+                       isValidReport(incoming()) &&
+                       incoming().reporterId == existing().reporterId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['status', 'adminNotes', 'updatedAt']);
+
+      allow delete: if isAdmin() && isValidId(reportId);
+    }
+
+    match /categories/{categoryId} {
+      allow get: if isSignedIn() && isValidId(categoryId);
+      allow list: if isSignedIn() && resource.data.nameAr is string;
+      allow create, update: if isAdmin() && isValidId(categoryId) && isValidCategory(incoming());
+      allow delete: if isAdmin() && isValidId(categoryId);
+    }
+
+    match /locations/{locationId} {
+      allow get: if isSignedIn() && isValidId(locationId);
+      allow list: if isSignedIn() && resource.data.nameAr is string;
+      allow create, update: if isAdmin() && isValidId(locationId) && isValidLocation(incoming());
+      allow delete: if isAdmin() && isValidId(locationId);
+    }
+  }
+}

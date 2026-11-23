@@ -1,0 +1,291 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user account and PII profile",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "city": { "type": "string" },
+        "accountType": { "type": "string", "enum": ["seeker", "owner"] },
+        "status": { "type": "string", "enum": ["active", "suspended"] },
+        "avatarUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "displayName", "accountType", "status", "createdAt", "updatedAt"]
+    },
+    "PublicProfile": {
+      "title": "PublicProfile",
+      "description": "Non-PII public advertiser display profile",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "accountType": { "type": "string", "enum": ["seeker", "owner"] },
+        "city": { "type": "string" },
+        "verified": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "displayName", "accountType", "verified", "updatedAt"]
+    },
+    "Property": {
+      "title": "Property",
+      "description": "Real estate listing for sale or rent with moderation status",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "contactPhone": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "propertyType": {
+          "type": "string",
+          "enum": ["apartment", "villa", "land", "shop", "office", "chalet", "investment"]
+        },
+        "listingType": { "type": "string", "enum": ["sale", "rent"] },
+        "price": { "type": "number" },
+        "areaSqm": { "type": "number" },
+        "governorate": { "type": "string" },
+        "city": { "type": "string" },
+        "district": { "type": "string" },
+        "address": { "type": "string" },
+        "bedrooms": { "type": "integer" },
+        "bathrooms": { "type": "integer" },
+        "floor": { "type": "integer" },
+        "finishingType": {
+          "type": "string",
+          "enum": ["super_lux", "lux", "semi_finished", "unfinished", "furnished"]
+        },
+        "furnished": { "type": "boolean" },
+        "hasElevator": { "type": "boolean" },
+        "hasGarage": { "type": "boolean" },
+        "hasBalcony": { "type": "boolean" },
+        "features": { "type": "array" },
+        "amenities": { "type": "array" },
+        "imageUrls": { "type": "array" },
+        "videoUrl": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected", "paused"]
+        },
+        "featured": { "type": "boolean" },
+        "viewsCount": { "type": "integer" },
+        "rejectionReason": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerId", "ownerName", "contactPhone", "title", "description",
+        "propertyType", "listingType", "price", "areaSqm", "governorate",
+        "city", "district", "address", "bedrooms", "bathrooms", "floor",
+        "finishingType", "furnished", "hasElevator", "hasGarage", "hasBalcony",
+        "features", "amenities", "imageUrls", "latitude", "longitude",
+        "status", "featured", "viewsCount", "createdAt", "updatedAt"
+      ]
+    },
+    "PropertyReview": {
+      "title": "PropertyReview",
+      "description": "User review on a property listing",
+      "type": "object",
+      "properties": {
+        "propertyId": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "rating": { "type": "integer" },
+        "comment": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["propertyId", "authorId", "authorName", "rating", "comment", "createdAt"]
+    },
+    "Favorite": {
+      "title": "Favorite",
+      "description": "User saved favorite property reference",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "propertyId": { "type": "string" },
+        "title": { "type": "string" },
+        "price": { "type": "number" },
+        "city": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "propertyId", "createdAt"]
+    },
+    "SearchHistory": {
+      "title": "SearchHistory",
+      "description": "Saved search filters history",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "querySummary": { "type": "string" },
+        "governorate": { "type": "string" },
+        "propertyType": { "type": "string" },
+        "listingType": { "type": "string" },
+        "maxPrice": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "querySummary", "createdAt"]
+    },
+    "NotificationItem": {
+      "title": "NotificationItem",
+      "description": "In-app notification for messages, listing approvals, and alerts",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "type": { "type": "string", "enum": ["message", "listing_status", "new_offer", "system"] },
+        "targetId": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "senderId", "title", "body", "type", "read", "createdAt"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Direct messaging thread between buyer and property advertiser",
+      "type": "object",
+      "properties": {
+        "participantIds": { "type": "array" },
+        "propertyId": { "type": "string" },
+        "propertyTitle": { "type": "string" },
+        "participantNames": { "type": "object" },
+        "lastMessage": { "type": "string" },
+        "lastSenderId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "participantIds", "propertyId", "propertyTitle", "participantNames",
+        "lastMessage", "lastSenderId", "createdAt", "updatedAt"
+      ]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Message inside a conversation with denormalized participantIds",
+      "type": "object",
+      "properties": {
+        "conversationId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "participantIds": { "type": "array" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["conversationId", "senderId", "senderName", "participantIds", "text", "createdAt"]
+    },
+    "ReportItem": {
+      "title": "ReportItem",
+      "description": "Property complaint or support issue report",
+      "type": "object",
+      "properties": {
+        "reporterId": { "type": "string" },
+        "reporterName": { "type": "string" },
+        "propertyId": { "type": "string" },
+        "propertyTitle": { "type": "string" },
+        "reportType": { "type": "string", "enum": ["property_report", "support_ticket"] },
+        "reason": { "type": "string" },
+        "details": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "resolved"] },
+        "adminNotes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["reporterId", "reporterName", "reportType", "reason", "details", "status", "createdAt", "updatedAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Real estate property category",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "nameAr": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "sortOrder": { "type": "integer" }
+      },
+      "required": ["key", "nameAr", "enabled", "sortOrder"]
+    },
+    "LocationItem": {
+      "title": "LocationItem",
+      "description": "Governorate and cities taxonomy",
+      "type": "object",
+      "properties": {
+        "nameAr": { "type": "string" },
+        "cities": { "type": "array" },
+        "enabled": { "type": "boolean" }
+      },
+      "required": ["nameAr", "cities", "enabled"]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Authorized admin UID record",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user profile documents (PII restricted to owner/admin)"
+    },
+    "/public_profiles/{userId}": {
+      "schema": { "$ref": "#/entities/PublicProfile" },
+      "description": "Public non-PII advertiser info"
+    },
+    "/properties/{propertyId}": {
+      "schema": { "$ref": "#/entities/Property" },
+      "description": "Property listings with moderation status"
+    },
+    "/properties/{propertyId}/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/PropertyReview" },
+      "description": "User reviews on property listings"
+    },
+    "/users/{userId}/favorites/{propertyId}": {
+      "schema": { "$ref": "#/entities/Favorite" },
+      "description": "User saved favorite properties"
+    },
+    "/users/{userId}/search_history/{historyId}": {
+      "schema": { "$ref": "#/entities/SearchHistory" },
+      "description": "User search history"
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/NotificationItem" },
+      "description": "User notifications"
+    },
+    "/conversations/{conversationId}": {
+      "schema": { "$ref": "#/entities/Conversation" },
+      "description": "Buyer-to-advertiser chat threads"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Individual chat messages"
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/entities/ReportItem" },
+      "description": "Listing complaints and support tickets"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Managed property categories"
+    },
+    "/locations/{locationId}": {
+      "schema": { "$ref": "#/entities/LocationItem" },
+      "description": "Managed Egyptian governorates and cities"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "System administrator allowlist"
+    }
+  }
+}
